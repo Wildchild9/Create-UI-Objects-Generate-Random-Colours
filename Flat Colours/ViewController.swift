@@ -49,6 +49,17 @@ class ViewController: UIViewController {
         // Dispose of any resources that can be recreated.
     }
     
+ //   @IBOutlet weak var button: UIButton!
+    
+    //MARK: - @IBAction buttonPressed
+
+    
+    
+    @objc func buttonPressed(_ sender: AnyObject) {
+        sender.removeFromSuperview()
+        Colours.used.totalArray.remove(at: sender.tag - 1)
+    }
+    
     
     func makeObjects(type: String = "button", labels: Int, columns: Int = 4, spacing: CGFloat = 30.asCGFloat(), stretchToFit: Bool = false, spreadOut: Bool = true, someRounded: Bool = false, circles: Bool = false, darkenIfUsed: Bool = false) {
         
@@ -171,7 +182,7 @@ class ViewController: UIViewController {
                     print(Colours.used.totalArray)
                     print(Colours.used.totalArray.count)
                     
-                    square.tag = Colours.used.totalArray.count
+                   
                     
                     let darkenedBackgroundColour = square.backgroundColor?.darken(byPercentage: 0.2)
                     
@@ -192,12 +203,12 @@ class ViewController: UIViewController {
                     
                     
                 }
-                for num in 1...Buttons.access.array.count {
-                    Buttons.access.array[num - 1].tag = num
-                }
-                for num in 1...Buttons.access.array.count {
-                    print(Buttons.access.array[num - 1].tag)
-                }
+//                for num in 1...Buttons.access.array.count {
+//                    Buttons.access.array[num - 1].tag = num
+//                }
+//                for num in 1...Buttons.access.array.count {
+//                    print(Buttons.access.array[num - 1].tag)
+//                }
                 
             } else if type == "label" || type == "UILabel" {
                 makeLabel(num: num, view: view, x: x, y: y, width: width, height: height)
@@ -216,21 +227,8 @@ class ViewController: UIViewController {
     
     
     
-    //MARK: - @IBAction buttonPressed
     
-    @IBAction func buttonPressed(sender: UIButton) {
-        
-        print(sender.tag)
-        
-    }
-    
-    
-    
-    
-}// END OF CLASS
-
-
-
+} // END OF CLASS
 
 
 
@@ -249,18 +247,25 @@ class ViewController: UIViewController {
 
 
 func makeButton(num: Int, view: UIView, x: CGFloat, y: CGFloat, width: CGFloat, height: CGFloat, isHighlighted: Bool = false, showsTouchWhenHighlighted: Bool = false, buttonType: UIButtonType = .custom, completion: ((UIButton) -> Void)? = nil) {
+    
     let square = UIButton.init(type: buttonType)
+    
+    let vc = ViewController()
     
     square.isHighlighted = isHighlighted
     square.showsTouchWhenHighlighted = showsTouchWhenHighlighted
     
     square.frame = CGRect(x: x, y: y, width: width, height: height)
-    
+    square.tag = Colours.used.totalArray.count + 1
     square.backgroundColor = UIColor.flatMint
+    
+    square.addTarget(vc, action: #selector(vc.buttonPressed), for: .touchUpInside)
     
     view.addSubview(square)
     completion?(square)
 }
+
+
 
 func makeView(num: Int, view: UIView, x: CGFloat, y: CGFloat, width: CGFloat, height: CGFloat, completion: ((UIView) -> Void)? = nil) {
     let square = UIView()
@@ -302,7 +307,7 @@ func higherValue(_ num1: CGFloat, _ num2: CGFloat ) -> CGFloat {
     }
 }
 
-func lowerValue(_  num1: Double, _  num2: Double ) -> Double {
+func lowerValue(_ num1: Double, _ num2: Double ) -> Double {
     if num1 < num2 { return num1 } else if num2 < num1 { return num2 } else if num1 == num2 { return num1 } else { let random = Int(arc4random_uniform(2)) + 1; if random == 1 { return num1 } else { return num2 }}
 }
 
