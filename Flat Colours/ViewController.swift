@@ -17,6 +17,11 @@ class New {
     static let label = New()
 }
 
+class Buttons {
+    var array : [UIButton] = []
+    static let access = Buttons()
+}
+
 class Colours {
     
     var array : [String] = ["FFFFFF"]
@@ -32,6 +37,7 @@ class ViewController: UIViewController {
         super.viewDidLoad()
 
         makeObjects(labels: 120, columns: 8, spacing: 12.5, stretchToFit: true, spreadOut: true, circles: true)
+        
         
 
     
@@ -131,7 +137,7 @@ class ViewController: UIViewController {
                 makeButton(num: num, view: view, x: x, y: y, width: width, height: height) { square in
                     
                     square.layer.masksToBounds = true
-                    square.tag = num + 1
+                    
                     let regularCR : CGFloat = (lowerValue(width.toDouble(), height.toDouble()) / 3.68).asCGFloat()  // Ratio --> 46 : 12.5 = 3.68 : 1
                     
                     square.layer.cornerRadius = regularCR
@@ -165,6 +171,8 @@ class ViewController: UIViewController {
                     print(Colours.used.totalArray)
                     print(Colours.used.totalArray.count)
                     
+                    square.tag = Colours.used.totalArray.count
+                    
                     let darkenedBackgroundColour = square.backgroundColor?.darken(byPercentage: 0.2)
                     
                     square.setBackgroundColor(color: darkenedBackgroundColour!, forState: .highlighted)
@@ -179,7 +187,18 @@ class ViewController: UIViewController {
                     if circles {
                         square.layer.cornerRadius = roundedRadius
                     }
+                    
+                    Buttons.access.array.append(square)
+                    
+                    
                 }
+                for num in 1...Buttons.access.array.count {
+                    Buttons.access.array[num - 1].tag = num
+                }
+                for num in 1...Buttons.access.array.count {
+                    print(Buttons.access.array[num - 1].tag)
+                }
+                
             } else if type == "label" || type == "UILabel" {
                 makeLabel(num: num, view: view, x: x, y: y, width: width, height: height)
             } else if type == "view" || type == "UIView" {
@@ -193,7 +212,34 @@ class ViewController: UIViewController {
             
         }
     }
-}
+    
+    
+    
+    
+    //MARK: - @IBAction buttonPressed
+    
+    @IBAction func buttonPressed(sender: UIButton) {
+        
+        print(sender.tag)
+        
+    }
+    
+    
+    
+    
+}// END OF CLASS
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
