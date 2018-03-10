@@ -18,8 +18,12 @@ class New {
 }
 
 class Colours {
+    
     var array : [String] = ["FFFFFF"]
     static let used = Colours()
+    static let attempts = Colours()
+    var count : Int = 0
+    var totalArray : [String] = []
 }
 
 class ViewController: UIViewController {
@@ -27,7 +31,9 @@ class ViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        makeObjects(labels: 48, columns: 4, spacing: 20, stretchToFit: true)
+        makeObjects(labels: 120, columns: 8, spacing: 12.5, stretchToFit: true, spreadOut: true, circles: true)
+        
+
     
         // Do any additional setup after loading the view, typically from a nib.
     }
@@ -38,7 +44,7 @@ class ViewController: UIViewController {
     }
     
     
-    func makeObjects(type: String = "button", labels: Int, columns: Int = 4, spacing: CGFloat = 30.asCGFloat(), stretchToFit: Bool = false, spreadOut: Bool = true, someRounded: Bool = false, circles: Bool = false) {
+    func makeObjects(type: String = "button", labels: Int, columns: Int = 4, spacing: CGFloat = 30.asCGFloat(), stretchToFit: Bool = false, spreadOut: Bool = true, someRounded: Bool = false, circles: Bool = false, darkenIfUsed: Bool = false) {
         
         New.label.centerX = view.center.x
         New.label.centerY = view.center.y
@@ -98,15 +104,21 @@ class ViewController: UIViewController {
             
             var newColourArray : [String] = ["FFFFFF"]
             var colourChecks = 0
+            
             while Colours.used.array.contains(newColourArray.last!) {
-                
+                Colours.attempts.count += 1
+                if Colours.used.array.count == 49 {
+                    Colours.used.array = ["FFFFFF"]
+                    newColourArray = ["FFFFFF"]
+                }
                 let newColour = UIColor.randomFlat.hexValue()
                 let containsNewColour : Bool = newColourArray.contains(newColour)
                 if containsNewColour == false {
                     newColourArray.append(newColour)
                     colourChecks += 1
-                    print(colourChecks)
                 }
+                print("\(Colours.attempts.count). \(newColourArray)".spaced())
+                
              
             }
             Colours.used.array.append(newColourArray.last!)
@@ -119,19 +131,39 @@ class ViewController: UIViewController {
                 makeButton(num: num, view: view, x: x, y: y, width: width, height: height) { square in
                     
                     square.layer.masksToBounds = true
-                    
+                    square.tag = num + 1
                     let regularCR : CGFloat = (lowerValue(width.toDouble(), height.toDouble()) / 3.68).asCGFloat()  // Ratio --> 46 : 12.5 = 3.68 : 1
                     
                     square.layer.cornerRadius = regularCR
-//                    
+//
 //                    square.setTitle("---", for: [.normal, .selected, .highlighted])
 //                    square.titleLabel?.textAlignment = .center
 //                    let contrastingColour = UIColor.init(contrastingBlackOrWhiteColorOn: squareColour!, isFlat: true)
 //                    square.setTitleColor(contrastingColour, for: [.normal, .selected, .highlighted])
                     
                     let progressivelyDarkerBackgroundColour : UIColor = squareColour!.darken(byPercentage: (CGFloat((1.toDouble()/48.toDouble()) * (num.toDouble() + 1.toDouble()))))!
+                   
+                    guard var darkenedSquareColour = squareColour else { fatalError("squareColour doesn't exist.".spaced()) }
                     
-                    square.backgroundColor = squareColour!
+                    if darkenIfUsed == false {
+                        square.backgroundColor = squareColour!
+                        Colours.used.totalArray.append(squareColour!.hexValue())
+                    } else {
+                        if Colours.used.totalArray.contains(darkenedSquareColour.hexValue()) {
+                            repeat {
+                                darkenedSquareColour = darkenedSquareColour.darken(byPercentage: 0.2)!
+                            } while Colours.used.totalArray.contains(darkenedSquareColour.hexValue())
+                            square.backgroundColor = darkenedSquareColour
+                            Colours.used.totalArray.append(darkenedSquareColour.hexValue())
+                        } else {
+                            square.backgroundColor = squareColour!
+                            Colours.used.totalArray.append(squareColour!.hexValue())
+                        }
+                    }
+                    
+                    
+                    print(Colours.used.totalArray)
+                    print(Colours.used.totalArray.count)
                     
                     let darkenedBackgroundColour = square.backgroundColor?.darken(byPercentage: 0.2)
                     
@@ -297,5 +329,16 @@ extension Double {
     
 }
 
+extension String {
+    
+    func spaced(_ n: Int = 1) -> String {
+        var returnString = "\(self)"
+        for _ in 1...n {
+            returnString = "\n\(returnString)\n"
+        }
+        return returnString
+    }
+    
+}
 
 
