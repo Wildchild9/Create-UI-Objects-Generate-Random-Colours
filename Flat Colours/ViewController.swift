@@ -14,6 +14,7 @@ class New {
     var y : CGFloat = 0
     var centerX : CGFloat = 0
     var centerY : CGFloat = 0
+    var numberOfLabels : Int = 0
     static let label = New()
 }
 
@@ -30,38 +31,131 @@ class Colours {
     var count : Int = 0
     var totalArray : [String] = []
 }
+class Switch {
+    var count : Int = 4
+    static let presses = Switch()
+}
 
 class ViewController: UIViewController {
 
+    let greenColour = #colorLiteral(red: 0, green: 0.7883020043, blue: 0, alpha: 1).flatten()
+    let redColour = #colorLiteral(red: 1, green: 0, blue: 0, alpha: 1).flatten()
+    
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        makeObjects(labels: 120, columns: 8, spacing: 12.5, stretchToFit: true, spreadOut: true, circles: true)
+        initialButton()
         
+        makeObjects(labels: 48, columns: 8, spacing: 12.5, stretchToFit: true, spreadOut: false, circles: true, topPadding: 70)
         
+            
 
     
         // Do any additional setup after loading the view, typically from a nib.
     }
-
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
-    }
     
- //   @IBOutlet weak var button: UIButton!
+   
     
     //MARK: - @IBAction buttonPressed
 
     
     
-    @objc func buttonPressed(_ sender: AnyObject) {
-        sender.removeFromSuperview()
-        Colours.used.totalArray.remove(at: sender.tag - 1)
+    @objc func buttonPressed(_ sender: UIButton!) {
+        print(sender.tag)
+        if sender.tag == 1000 {
+            let button = sender!
+            
+            print(Switch.presses.count)
+            if Switch.presses.count % 2 == 0 {
+                button.backgroundColor = redColour
+                button.setTitle("Delete", for: .normal)
+                button.setTitleColor(UIColor.init(contrastingBlackOrWhiteColorOn: greenColour, isFlat: true), for: .normal)
+                
+                button.titleLabel?.font = UIFont(name: "HelveticaNeue-Medium", size: 25)
+
+                print("Delete".spaced())
+//                button.titleLabel?.textColor = UIColor.init(contrastingBlackOrWhiteColorOn: redColour, isFlat: true)
+//                button.titleLabel?.font = UIFont(name: "HelveticaNeue-Medium", size: 25)
+            } else {
+                button.setTitle("Show Hex", for: .normal)
+                button.backgroundColor = greenColour
+                button.setTitleColor(UIColor.init(contrastingBlackOrWhiteColorOn: greenColour, isFlat: true), for: .normal)
+                button.titleLabel?.font = UIFont(name: "HelveticaNeue-Medium", size: 25)
+                print("Show Hex".spaced())
+            }
+            
+            Switch.presses.count += 1
+            
+        } else {
+            if Switch.presses.count % 2 == 0 {
+                
+                print(sender.backgroundColor!.hexValue())
+
+            } else {
+                sender.removeFromSuperview()
+
+            }
+            
+            
+        }
     }
     
     
-    func makeObjects(type: String = "button", labels: Int, columns: Int = 4, spacing: CGFloat = 30.asCGFloat(), stretchToFit: Bool = false, spreadOut: Bool = true, someRounded: Bool = false, circles: Bool = false, darkenIfUsed: Bool = false) {
+    
+    
+    
+    
+    
+    func initialButton() {
+        let square = UIButton.init(type: .custom)
+        
+        square.backgroundColor = greenColour
+        // square.titleLabel?.text = "Show Hex"
+        
+        
+        // square.setTitleColor(UIColor.init(contrastingBlackOrWhiteColorOn: square.backgroundColor!, isFlat: true), for: [.highlighted, .normal, .selected])
+        
+        square.frame = CGRect(x: view.center.x - 150, y: 35, width: 300, height: 50)
+        square.titleLabel?.textAlignment = .center
+        square.layer.masksToBounds = true
+        square.layer.cornerRadius = 15
+        square.tag = 1000
+        
+        square.addTarget(self, action: #selector(self.buttonPressed), for: .touchUpInside)
+        
+        self.view.addSubview(square)
+        //        let title = NSAttributedString(string: "Show Hex", attributes: [NSAttributedStringKey.foregroundColor : UIColor.init(contrastingBlackOrWhiteColorOn: square.backgroundColor!, isFlat: true), NSAttributedStringKey.font : UIFont(name: "HelveticaNeue-Bold", size: 10)!])
+        //        square.setAttributedTitle(title, for: [.highlighted, .normal, .selected])
+        square.setBackgroundColor(color: (square.backgroundColor?.darken(byPercentage: 0.2))!, forState: .highlighted)
+        square.setTitle("Show Hex", for: .normal)
+        square.backgroundColor = greenColour
+        square.setTitleColor(UIColor.init(contrastingBlackOrWhiteColorOn: greenColour, isFlat: true), for: .normal)
+        square.titleLabel?.font = UIFont(name: "HelveticaNeue-Medium", size: 25)
+        print("Show Hex".spaced())
+        
+        
+        
+        let reset = UIButton.init(type: .custom)
+        
+        reset.frame = CGRect(x: view.frame.size.width - 40 - 25, y: square.center.y - 20, width: 40, height: 40)
+        
+        reset.setBackgroundImage("reload", for: .normal)
+        
+        
+        
+    }
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    func makeObjects(type: String = "button", labels: Int, columns: Int = 4, spacing: CGFloat = 30.asCGFloat(), stretchToFit: Bool = false, spreadOut: Bool = true, someRounded: Bool = false, circles: Bool = false, darkenIfUsed: Bool = false, topPadding : CGFloat = 0, bottomPadding: CGFloat = 0, leftPadding: CGFloat = 0, rightPadding: CGFloat = 0) {
+        
+        New.label.numberOfLabels = labels
         
         New.label.centerX = view.center.x
         New.label.centerY = view.center.y
@@ -69,12 +163,17 @@ class ViewController: UIViewController {
         var sideX : CGFloat = 0
         var sideY : CGFloat = 0
         
+        
+        
         let rows : CGFloat = (labels / columns).asCGFloat()
         print(rows)
         
+        New.label.x = leftPadding
+        New.label.y = topPadding
+        
         if stretchToFit {
-            sideX = (view.frame.size.width - 60 - (spacing * (columns - 1).asCGFloat())) / columns.asCGFloat()
-            sideY = (view.frame.size.height - 80 - (spacing * (rows - 1))) / rows
+            sideX = ((view.frame.size.width - leftPadding - rightPadding) - 60 - (spacing * (columns - 1).asCGFloat())) / columns.asCGFloat()
+            sideY = ((view.frame.size.height - topPadding - bottomPadding) - 80 - (spacing * (rows - 1))) / rows
         } else {
             let side = view.frame.size.width / ((columns.asCGFloat() * 2.asCGFloat()) + 1.asCGFloat())
             sideX = side
@@ -92,7 +191,7 @@ class ViewController: UIViewController {
             spacingY = spacing
         }
         
-        New.label.y = 40
+        New.label.y += 40
         
         
         for num in 0...labels - 1 {
