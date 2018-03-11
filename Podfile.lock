@@ -2,9 +2,11 @@ PODS:
   - ChameleonFramework/Default (2.1.0)
   - ChameleonFramework/Swift (2.1.0):
     - ChameleonFramework/Default
+  - PKHUD (5.0.0)
 
 DEPENDENCIES:
   - ChameleonFramework/Swift (from `https://github.com/ViccAlexander/Chameleon.git`)
+  - PKHUD (~> 5.0)
 
 EXTERNAL SOURCES:
   ChameleonFramework:
@@ -17,7 +19,8 @@ CHECKOUT OPTIONS:
 
 SPEC CHECKSUMS:
   ChameleonFramework: d21a3cc247abfe5e37609a283a8238b03575cf64
+  PKHUD: 3c001512c6e002091184197a8de7a20420786e3b
 
-PODFILE CHECKSUM: adf4353b32d2231b150db9d233b6d1f7aee1d7eb
+PODFILE CHECKSUM: 54cd771fc8dc79f980ea2659c8397d136512345b
 
 COCOAPODS: 1.4.0

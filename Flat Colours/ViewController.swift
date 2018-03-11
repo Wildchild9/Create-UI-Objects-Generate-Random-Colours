@@ -8,6 +8,7 @@
 
 import UIKit
 import ChameleonFramework
+import PKHUD
 
 class New {
     var x : CGFloat = 0
@@ -139,8 +140,12 @@ class ViewController: UIViewController {
         } else {
             if Switch.presses.count % 2 == 0 {
                 
-                print(sender.backgroundColor!.hexValue())
-
+                print("\n********************************\n\nColour:\n\t1. \(sender.backgroundColor!.hexValue())\n\n********************************\n")
+                HUD.allowsInteraction = false
+                HUD.flash(.label(sender.backgroundColor!.hexValue()), delay: 1.25)
+                
+                
+                
             } else {
                 
                 Color.print.array[sender.tag - 1] = "Removed"
@@ -214,7 +219,7 @@ class ViewController: UIViewController {
         
         // square.setTitleColor(UIColor.init(contrastingBlackOrWhiteColorOn: square.backgroundColor!, isFlat: true), for: [.highlighted, .normal, .selected])
         
-        show.frame = CGRect(x: view.center.x - 150, y: view.frame.size.height - 42.5 - 25, width: 300, height: 42.5)
+        show.frame = CGRect(x: view.center.x - 150, y: view.frame.size.height - 45 - 25, width: 300, height: 45)
         show.titleLabel?.textAlignment = .center
         show.layer.masksToBounds = true
         show.layer.cornerRadius = 13.5
