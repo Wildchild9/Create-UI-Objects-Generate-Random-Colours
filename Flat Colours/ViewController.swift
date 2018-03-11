@@ -17,12 +17,10 @@ class New {
     var numberOfLabels : Int = 0
     static let label = New()
 }
-
-class Buttons {
-    var array : [UIButton] = []
-    static let access = Buttons()
+class Color {
+    static let print = Color()
+    var array : [String] = []
 }
-
 class Colours {
     
     var array : [String] = ["FFFFFF"]
@@ -35,20 +33,42 @@ class Switch {
     var count : Int = 4
     static let presses = Switch()
 }
+class MakeObject {
+    var initialMake = false
+    static let preferences = MakeObject()
+    
+    var type: String = "button"
+    var labels: Int = 0
+    var columns: Int = 4
+    var spacing: CGFloat = 30.asCGFloat()
+    var stretchToFit: Bool = false
+    var spreadOut: Bool = true
+    var someRounded: Bool = false
+    var circles: Bool = false
+    var darkenIfUsed: Bool = false
+    var topPadding : CGFloat = 0
+    var bottomPadding: CGFloat = 0
+    var leftPadding: CGFloat = 0
+    var rightPadding: CGFloat = 0
+    var printStuff: Bool = false
+    var oneColour: UIColor? = nil
+    
+}
 
 class ViewController: UIViewController {
 
     let greenColour = #colorLiteral(red: 0, green: 0.7883020043, blue: 0, alpha: 1).flatten()
     let redColour = #colorLiteral(red: 1, green: 0, blue: 0, alpha: 1).flatten()
+    let printColour = #colorLiteral(red: 0, green: 0.5898008943, blue: 1, alpha: 1).flatten()
     
     override func viewDidLoad() {
         super.viewDidLoad()
 
         initialButton()
         
-        makeObjects(labels: 48, columns: 8, spacing: 12.5, stretchToFit: true, spreadOut: false, circles: true, topPadding: 70)
+        makeObjects(labels: 48, columns: 8, spacing: 12.5, stretchToFit: true, spreadOut: false, circles: true, topPadding: 70, bottomPadding: 55)
         
-            
+        
 
     
         // Do any additional setup after loading the view, typically from a nib.
@@ -62,37 +82,71 @@ class ViewController: UIViewController {
     
     @objc func buttonPressed(_ sender: UIButton!) {
         print(sender.tag)
-        if sender.tag == 1000 {
-            let button = sender!
-            
-            print(Switch.presses.count)
-            if Switch.presses.count % 2 == 0 {
-                button.backgroundColor = redColour
-                button.setTitle("Delete", for: .normal)
-                button.setTitleColor(UIColor.init(contrastingBlackOrWhiteColorOn: greenColour, isFlat: true), for: .normal)
+        
+        if sender.tag % 1000 == 0 {
+            if sender.tag == 3000 {
+                var colourPrintString = "\n********************************\n\nColours:\n"
+                var colourCount = 0
+                for num in 1...Color.print.array.count {
+                    if Color.print.array[num - 1] != "Removed" {
+                        colourCount += 1
+                        colourPrintString.append("\t\(colourCount). \(Color.print.array[num - 1])\n")
+                    }
+                    
+                }
+                colourPrintString.append("\n********************************")
+                print(colourPrintString)
                 
-                button.titleLabel?.font = UIFont(name: "HelveticaNeue-Medium", size: 25)
+            } else if sender.tag == 2000 {
+                spin(with: .curveLinear, for: sender)
+                startSpin(sender)
+                
+                for currentView in self.view.subviews {
+                    if currentView.tag % 1000 != 0 {
+                        currentView.removeFromSuperview()
+                    }
+                    
+                }
+                self.makeObjects(type: MakeObject.preferences.type, labels: MakeObject.preferences.labels, columns: MakeObject.preferences.columns, spacing: MakeObject.preferences.spacing, stretchToFit: MakeObject.preferences.stretchToFit, spreadOut: MakeObject.preferences.spreadOut, someRounded: MakeObject.preferences.someRounded, circles: MakeObject.preferences.circles, darkenIfUsed: MakeObject.preferences.darkenIfUsed, topPadding: MakeObject.preferences.topPadding, bottomPadding: MakeObject.preferences.bottomPadding, leftPadding: MakeObject.preferences.leftPadding, rightPadding: MakeObject.preferences.rightPadding)
+                
+                
+                
+                
+            } else if sender.tag == 1000 {
+                let button = sender!
+                
+                print(Switch.presses.count)
+                if Switch.presses.count % 2 == 0 {
+                    button.backgroundColor = redColour
+                    button.setTitle("Delete", for: .normal)
+                    button.setTitleColor(UIColor.init(contrastingBlackOrWhiteColorOn: greenColour, isFlat: true), for: .normal)
+                    
+                    button.titleLabel?.font = UIFont(name: "HelveticaNeue-Medium", size: 25)
 
-                print("Delete".spaced())
-//                button.titleLabel?.textColor = UIColor.init(contrastingBlackOrWhiteColorOn: redColour, isFlat: true)
-//                button.titleLabel?.font = UIFont(name: "HelveticaNeue-Medium", size: 25)
-            } else {
-                button.setTitle("Show Hex", for: .normal)
-                button.backgroundColor = greenColour
-                button.setTitleColor(UIColor.init(contrastingBlackOrWhiteColorOn: greenColour, isFlat: true), for: .normal)
-                button.titleLabel?.font = UIFont(name: "HelveticaNeue-Medium", size: 25)
-                print("Show Hex".spaced())
+                    print("Delete".spaced())
+    //                button.titleLabel?.textColor = UIColor.init(contrastingBlackOrWhiteColorOn: redColour, isFlat: true)
+    //                button.titleLabel?.font = UIFont(name: "HelveticaNeue-Medium", size: 25)
+                } else {
+                    button.setTitle("Show Hex", for: .normal)
+                    button.backgroundColor = greenColour
+                    button.setTitleColor(UIColor.init(contrastingBlackOrWhiteColorOn: greenColour, isFlat: true), for: .normal)
+                    button.titleLabel?.font = UIFont(name: "HelveticaNeue-Medium", size: 25)
+                    print("Show Hex".spaced())
+                }
+                
+                Switch.presses.count += 1
             }
-            
-            Switch.presses.count += 1
-            
         } else {
             if Switch.presses.count % 2 == 0 {
                 
                 print(sender.backgroundColor!.hexValue())
 
             } else {
+                
+                Color.print.array[sender.tag - 1] = "Removed"
                 sender.removeFromSuperview()
+                
+                
 
             }
             
@@ -101,8 +155,7 @@ class ViewController: UIViewController {
     }
     
     
-    
-    
+  
     
     
     
@@ -131,18 +184,86 @@ class ViewController: UIViewController {
         square.backgroundColor = greenColour
         square.setTitleColor(UIColor.init(contrastingBlackOrWhiteColorOn: greenColour, isFlat: true), for: .normal)
         square.titleLabel?.font = UIFont(name: "HelveticaNeue-Medium", size: 25)
-        print("Show Hex".spaced())
+       // print("Show Hex".spaced())
         
         
         
         let reset = UIButton.init(type: .custom)
         
-        reset.frame = CGRect(x: view.frame.size.width - 40 - 25, y: square.center.y - 20, width: 40, height: 40)
+        reset.frame = CGRect(x: view.frame.size.width - 35 - 10, y: square.frame.origin.y, width: 35, height: 35)
+        reset.setImage(UIImage(named: "reload"), for: .normal)
+        reset.contentMode = .scaleAspectFill
+    
+        reset.layer.masksToBounds = true
+        reset.layer.cornerRadius = reset.frame.size.width / 2
+        reset.imageEdgeInsets = UIEdgeInsetsMake(6, 6, 6, 6)
+        reset.tag = 2000
         
-        reset.setBackgroundImage("reload", for: .normal)
+        reset.addTarget(self, action: #selector(self.buttonPressed), for: .touchUpInside)
+        
+        self.view.addSubview(reset)
+        
+        reset.setBackgroundColor(color: #colorLiteral(red: 0, green: 0.5898008943, blue: 1, alpha: 1), forState: .normal)
         
         
+        let show = UIButton.init(type: .custom)
         
+        show.backgroundColor = greenColour
+        // square.titleLabel?.text = "Show Hex"
+        
+        
+        // square.setTitleColor(UIColor.init(contrastingBlackOrWhiteColorOn: square.backgroundColor!, isFlat: true), for: [.highlighted, .normal, .selected])
+        
+        show.frame = CGRect(x: view.center.x - 150, y: view.frame.size.height - 42.5 - 25, width: 300, height: 42.5)
+        show.titleLabel?.textAlignment = .center
+        show.layer.masksToBounds = true
+        show.layer.cornerRadius = 13.5
+        show.tag = 3000
+        
+        show.addTarget(self, action: #selector(self.buttonPressed), for: .touchUpInside)
+        
+        self.view.addSubview(show)
+        //        let title = NSAttributedString(string: "Show Hex", attributes: [NSAttributedStringKey.foregroundColor : UIColor.init(contrastingBlackOrWhiteColorOn: square.backgroundColor!, isFlat: true), NSAttributedStringKey.font : UIFont(name: "HelveticaNeue-Bold", size: 10)!])
+        //        square.setAttributedTitle(title, for: [.highlighted, .normal, .selected])
+        show.setBackgroundColor(color: (square.backgroundColor?.darken(byPercentage: 0.2))!, forState: .highlighted)
+        show.setTitle("Print Colours", for: .normal)
+        show.backgroundColor = printColour
+        show.setTitleColor(.white, for: .normal)
+        show.titleLabel?.font = UIFont(name: "HelveticaNeue-Medium", size: 25)
+        
+        
+    }
+/******************************************************/
+//MARK: - Spin Animation
+    var animating = false
+    
+    func spin(with options: UIViewAnimationOptions, for button: UIButton) {
+        // this spin completes 360 degrees every 2 seconds
+        UIView.animate(withDuration: 0.5, delay: 0, options: options, animations: {() -> Void in
+            button.transform = button.transform.rotated(by: .pi / 2)
+        }, completion: {(_ finished: Bool) -> Void in
+            if finished {
+                if self.animating {
+                    // if flag still set, keep spinning with constant speed
+                    self.spin(with: .curveLinear, for: button)
+                }
+                else if options != .curveEaseOut {
+                    // one last spin, with deceleration
+                    self.spin(with: .curveEaseOut, for: button)
+                }
+            }
+        })
+    }
+    func startSpin(_ button: UIButton) {
+        if !animating {
+            animating = true
+            spin(with: .curveEaseIn, for: button)
+        }
+    }
+    
+    func stopSpin() {
+        // set the flag to stop spinning after one last 90 degree increment
+        animating = false
     }
     
     
@@ -152,8 +273,36 @@ class ViewController: UIViewController {
     
     
     
+/******************************************************/
+//MARK: - Make Objects
     
-    func makeObjects(type: String = "button", labels: Int, columns: Int = 4, spacing: CGFloat = 30.asCGFloat(), stretchToFit: Bool = false, spreadOut: Bool = true, someRounded: Bool = false, circles: Bool = false, darkenIfUsed: Bool = false, topPadding : CGFloat = 0, bottomPadding: CGFloat = 0, leftPadding: CGFloat = 0, rightPadding: CGFloat = 0) {
+    
+    func makeObjects(type: String = "button", labels: Int, columns: Int = 4, spacing: CGFloat = 30.asCGFloat(), stretchToFit: Bool = false, spreadOut: Bool = true, someRounded: Bool = false, circles: Bool = false, darkenIfUsed: Bool = false, topPadding : CGFloat = 0, bottomPadding: CGFloat = 0, leftPadding: CGFloat = 0, rightPadding: CGFloat = 0, printStuff: Bool = false, oneColour: UIColor? = nil, completion: (() -> Void)? = nil) {
+        
+        if MakeObject.preferences.initialMake == false {
+            MakeObject.preferences.type = type
+            MakeObject.preferences.labels = labels
+            MakeObject.preferences.columns = columns
+            MakeObject.preferences.spacing = spacing
+            MakeObject.preferences.stretchToFit = stretchToFit
+            MakeObject.preferences.spreadOut = spreadOut
+            MakeObject.preferences.someRounded = someRounded
+            MakeObject.preferences.circles = circles
+            MakeObject.preferences.darkenIfUsed = darkenIfUsed
+            MakeObject.preferences.topPadding  = topPadding
+            MakeObject.preferences.bottomPadding = bottomPadding
+            MakeObject.preferences.leftPadding = leftPadding
+            MakeObject.preferences.rightPadding = rightPadding
+            MakeObject.preferences.printStuff = printStuff
+            MakeObject.preferences.oneColour = oneColour
+            MakeObject.preferences.initialMake = true
+        }
+        
+        (New.label.centerX, New.label.centerY, New.label.x, New.label.y, New.label.numberOfLabels) = (0,0,0,0,0)
+        (Colours.attempts.array, Colours.attempts.count, Colours.attempts.totalArray) = (["FFFFFF"], 0, [])
+        (Colours.used.array, Colours.used.count, Colours.used.totalArray) = (["FFFFFF"], 0, [])
+        
+        Color.print.array = []
         
         New.label.numberOfLabels = labels
         
@@ -166,7 +315,11 @@ class ViewController: UIViewController {
         
         
         let rows : CGFloat = (labels / columns).asCGFloat()
-        print(rows)
+        
+        if printStuff {
+            print("Rows: \(rows)")
+        }
+        
         
         New.label.x = leftPadding
         New.label.y = topPadding
@@ -233,7 +386,9 @@ class ViewController: UIViewController {
                     newColourArray.append(newColour)
                     colourChecks += 1
                 }
-                print("\(Colours.attempts.count). \(newColourArray)".spaced())
+                if printStuff {
+                    print("\(Colours.attempts.count). \(newColourArray)".spaced())
+                }
                 
              
             }
@@ -257,29 +412,37 @@ class ViewController: UIViewController {
 //                    let contrastingColour = UIColor.init(contrastingBlackOrWhiteColorOn: squareColour!, isFlat: true)
 //                    square.setTitleColor(contrastingColour, for: [.normal, .selected, .highlighted])
                     
-                    let progressivelyDarkerBackgroundColour : UIColor = squareColour!.darken(byPercentage: (CGFloat((1.toDouble()/48.toDouble()) * (num.toDouble() + 1.toDouble()))))!
-                   
-                    guard var darkenedSquareColour = squareColour else { fatalError("squareColour doesn't exist.".spaced()) }
                     
-                    if darkenIfUsed == false {
-                        square.backgroundColor = squareColour!
-                        Colours.used.totalArray.append(squareColour!.hexValue())
+                    if let _ = oneColour {
+                        let progressivelyDarkerBackgroundColour : UIColor = squareColour!.darken(byPercentage: (CGFloat((1.toDouble()/48.toDouble()) * (num.toDouble() + 1.toDouble()))))!
+                        square.backgroundColor = progressivelyDarkerBackgroundColour
+                        Colours.used.totalArray.append(progressivelyDarkerBackgroundColour.hexValue())
+                        
                     } else {
-                        if Colours.used.totalArray.contains(darkenedSquareColour.hexValue()) {
-                            repeat {
-                                darkenedSquareColour = darkenedSquareColour.darken(byPercentage: 0.2)!
-                            } while Colours.used.totalArray.contains(darkenedSquareColour.hexValue())
-                            square.backgroundColor = darkenedSquareColour
-                            Colours.used.totalArray.append(darkenedSquareColour.hexValue())
-                        } else {
+                        guard var darkenedSquareColour = squareColour else { fatalError("squareColour doesn't exist.".spaced()) }
+
+                        if darkenIfUsed == false {
                             square.backgroundColor = squareColour!
                             Colours.used.totalArray.append(squareColour!.hexValue())
+                        } else {
+                            if Colours.used.totalArray.contains(darkenedSquareColour.hexValue()) {
+                                repeat {
+                                    darkenedSquareColour = darkenedSquareColour.darken(byPercentage: 0.2)!
+                                } while Colours.used.totalArray.contains(darkenedSquareColour.hexValue())
+                                square.backgroundColor = darkenedSquareColour
+                                Colours.used.totalArray.append(darkenedSquareColour.hexValue())
+                            } else {
+                                square.backgroundColor = squareColour!
+                                Colours.used.totalArray.append(squareColour!.hexValue())
+                            }
                         }
                     }
                     
+                    if printStuff {
+                        print(Colours.used.totalArray)
+                        print(Colours.used.totalArray.count)
+                    }
                     
-                    print(Colours.used.totalArray)
-                    print(Colours.used.totalArray.count)
                     
                    
                     
@@ -298,17 +461,11 @@ class ViewController: UIViewController {
                         square.layer.cornerRadius = roundedRadius
                     }
                     
-                    Buttons.access.array.append(square)
+                    
                     
                     
                 }
-//                for num in 1...Buttons.access.array.count {
-//                    Buttons.access.array[num - 1].tag = num
-//                }
-//                for num in 1...Buttons.access.array.count {
-//                    print(Buttons.access.array[num - 1].tag)
-//                }
-                
+
             } else if type == "label" || type == "UILabel" {
                 makeLabel(num: num, view: view, x: x, y: y, width: width, height: height)
             } else if type == "view" || type == "UIView" {
@@ -316,11 +473,14 @@ class ViewController: UIViewController {
             } else {
                 makeButton(num: num, view: view, x: x, y: y, width: width, height: height)
             }
-            
-            
+
                 New.label.x += spacingX
-            
         }
+        stopSpin()
+        if printStuff {
+            print("".spaced(5))
+        }
+        Color.print.array = Colours.used.totalArray
     }
     
     
