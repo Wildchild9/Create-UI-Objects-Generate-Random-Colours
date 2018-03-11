@@ -81,7 +81,7 @@ class ViewController: UIViewController {
     
     
     @objc func buttonPressed(_ sender: UIButton!) {
-        print(sender.tag)
+        print("sender.tag = \(sender.tag)".spaced())
         
         if sender.tag % 1000 == 0 {
             if sender.tag == 3000 {
