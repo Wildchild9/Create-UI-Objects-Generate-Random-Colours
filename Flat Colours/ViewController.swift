@@ -67,9 +67,9 @@ class ViewController: UIViewController {
 
         initialButton()
         
-        makeObjects(labels: 48, columns: 8, spacing: 12.5, stretchToFit: true, spreadOut: false, circles: true, topPadding: 70, bottomPadding: 55)
-        
-        
+      //  makeObjects(labels: 48, columns: 4, spacing: 2, stretchToFit: false, spreadOut: false, circles: false, topPadding: 70, bottomPadding: 55, showContrastingText: true)
+        makeObjects(labels: 48, columns: 6)
+//makeObjects(type: <#T##String#>, labels: <#T##Int#>, columns: <#T##Int#>, spacing: <#T##CGFloat#>, stretchToFit: <#T##Bool#>, spreadOut: <#T##Bool#>, spreadOutWithHorizontalSpacing: <#T##Bool#>, spreadOutWithVerticalSpacing: <#T##Bool#>, someRounded: <#T##Bool#>, circles: <#T##Bool#>, darkenIfUsed: <#T##Bool#>, topPadding: <#T##CGFloat#>, bottomPadding: <#T##CGFloat#>, leftPadding: <#T##CGFloat#>, rightPadding: <#T##CGFloat#>, printStuff: <#T##Bool#>, oneColour: <#T##UIColor?#>, showContrastingText: <#T##Bool#>, completion: <#T##(() -> Void)?##(() -> Void)?##() -> Void#>)
 
     
         // Do any additional setup after loading the view, typically from a nib.
@@ -282,7 +282,9 @@ class ViewController: UIViewController {
 //MARK: - Make Objects
     
     
-    func makeObjects(type: String = "button", labels: Int, columns: Int = 4, spacing: CGFloat = 30.asCGFloat(), stretchToFit: Bool = false, spreadOut: Bool = true, someRounded: Bool = false, circles: Bool = false, darkenIfUsed: Bool = false, topPadding : CGFloat = 0, bottomPadding: CGFloat = 0, leftPadding: CGFloat = 0, rightPadding: CGFloat = 0, printStuff: Bool = false, oneColour: UIColor? = nil, completion: (() -> Void)? = nil) {
+    func makeObjects(type: String = "button", labels: Int, columns: Int = 4, spacing space: CGFloat = 5.asCGFloat(), stretchToFit: Bool = false, spreadOut: Bool = true, spreadOutWithHorizontalSpacing: Bool = false, spreadOutWithVerticalSpacing: Bool = false, someRounded: Bool = false, circles: Bool = false, darkenIfUsed: Bool = false, topPadding : CGFloat = 70, bottomPadding: CGFloat = 55, leftPadding: CGFloat = 0, rightPadding: CGFloat = 0, printStuff: Bool = false, oneColour: UIColor? = nil, showContrastingText: Bool = false, completion: (() -> Void)? = nil) {
+        
+        var spacing : CGFloat = space
         
         if MakeObject.preferences.initialMake == false {
             MakeObject.preferences.type = type
@@ -316,6 +318,7 @@ class ViewController: UIViewController {
         
         var sideX : CGFloat = 0
         var sideY : CGFloat = 0
+       
         
         
         
@@ -324,7 +327,7 @@ class ViewController: UIViewController {
         if printStuff {
             print("Rows: \(rows)")
         }
-        
+        spacing = higherValue((columns.asCGFloat() / 2) + (rows / columns.asCGFloat()), (rows / 2) + (columns.asCGFloat() / rows))
         
         New.label.x = leftPadding
         New.label.y = topPadding
@@ -333,7 +336,14 @@ class ViewController: UIViewController {
             sideX = ((view.frame.size.width - leftPadding - rightPadding) - 60 - (spacing * (columns - 1).asCGFloat())) / columns.asCGFloat()
             sideY = ((view.frame.size.height - topPadding - bottomPadding) - 80 - (spacing * (rows - 1))) / rows
         } else {
-            let side = view.frame.size.width / ((columns.asCGFloat() * 2.asCGFloat()) + 1.asCGFloat())
+            var side : CGFloat = lowerValue((((view.frame.size.width - leftPadding - rightPadding) - 60 - (spacing * (columns - 1).asCGFloat())) / columns.asCGFloat()).toDouble(), (((view.frame.size.height - topPadding - bottomPadding) - 80 - (spacing * (rows - 1))) / rows).toDouble()).asCGFloat()
+            
+            if spreadOutWithHorizontalSpacing {
+                side = ((view.frame.size.width - leftPadding - rightPadding) - 60 - (spacing * (columns - 1).asCGFloat())) / columns.asCGFloat()
+            } else if spreadOutWithVerticalSpacing {
+                side = ((view.frame.size.height - topPadding - bottomPadding) - 80 - (spacing * (rows - 1))) / rows
+            }
+            
             sideX = side
             sideY = side
         }
@@ -342,8 +352,8 @@ class ViewController: UIViewController {
         var spacingY : CGFloat = 0
 
         if spreadOut {
-            spacingX = (view.frame.size.width - 60 - (sideX * columns.asCGFloat())) / (columns - 1).asCGFloat()
-            spacingY = (view.frame.size.height - 80 - (sideY * rows)) / (rows - 1)
+            spacingX = (view.frame.size.width  - leftPadding - rightPadding - 60 - (sideX * columns.asCGFloat())) / (columns - 1).asCGFloat()
+            spacingY = (view.frame.size.height - topPadding - bottomPadding - 80 - (sideY * rows)) / (rows - 1)
         } else {
             spacingX = spacing
             spacingY = spacing
@@ -465,9 +475,12 @@ class ViewController: UIViewController {
                     if circles {
                         square.layer.cornerRadius = roundedRadius
                     }
-                    
-                    
-                    
+                    if showContrastingText {
+                        square.setTitle("||\n||", for: .normal)
+                        square.setTitleColor(UIColor.init(contrastingBlackOrWhiteColorOn: square.backgroundColor!, isFlat: true), for: .normal)
+                        
+                        square.titleLabel?.numberOfLines = 2
+                    }
                     
                 }
 
@@ -490,7 +503,7 @@ class ViewController: UIViewController {
     
     
     
-    
+
     
 } // END OF CLASS
 
@@ -526,6 +539,7 @@ func makeButton(num: Int, view: UIView, x: CGFloat, y: CGFloat, width: CGFloat, 
     square.addTarget(vc, action: #selector(vc.buttonPressed), for: .touchUpInside)
     
     view.addSubview(square)
+
     completion?(square)
 }
 
@@ -656,4 +670,71 @@ extension String {
     
 }
 
+extension Int {
+    
+    func factors(of n: Int) -> [Int] {
+        precondition(n > 0, "n must be positive")
+        let sqrtn = Int(Double(n).squareRoot())
+        var factors: [Int] = []
+        factors.reserveCapacity(2 * sqrtn)
+        for i in 1...sqrtn {
+            if n % i == 0 {
+                factors.append(i)
+            }
+        }
+        var j = factors.count - 1
+        if factors[j] * factors[j] == n {
+            j -= 1
+        }
+        while j >= 0 {
+            factors.append(n / factors[j])
+            j -= 1
+        }
+        
+        if factors.count % 2 == 0 {
+            let first = factors[(factors.count / 2) - 1]
+            let second = factors[factors.count / 2]
+            return [first, second]
+        } else if factors.count % 2 != 0 {
+            let num = factors[(factors.count + 1) / 2]
+            return [num, num]
+        } else {
+            return factors
+        }
+    }
+    
+    func midFactors() -> [Int] {
+        let n = self
+        print("\n")
+        precondition(n > 0, "n must be positive")
+        let sqrtn = Int(Double(n).squareRoot())
+        var factors: [Int] = []
+        factors.reserveCapacity(2 * sqrtn)
+        for i in 1...sqrtn {
+            if n % i == 0 {
+                factors.append(i)
+            }
+        }
+        var j = factors.count - 1
+        if factors[j] * factors[j] == n {
+            j -= 1
+        }
+        while j >= 0 {
+            factors.append(n / factors[j])
+            j -= 1
+        }
+        
+        if factors.count % 2 == 0 {
+            let first = factors[(factors.count / 2) - 1]
+            let second = factors[factors.count / 2]
+            return [first, second]
+        } else if factors.count % 2 != 0 {
+            let num = factors[((factors.count + 1) / 2) - 1]
+            return [num, num]
+            return factors
+        } else {
+            return factors
+        }
+    }
+}
 
